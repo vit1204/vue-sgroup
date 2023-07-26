@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script src="https://unpkg.com/vue@3.0.0-beta.12/dist/vue.global.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+    }
+    #app {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+    .container {
+      width: 730px;
+      height: 660px;
+      background-color: aqua;
+    }
+    h1 {
+      text-align: center;
+      font-size: 2.5rem;
+    }
+    .display {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin-top: 20px;
+    }
+    .menu {
+      width: 500px;
+      height: 70px;
+      background-color: coral;
+      display: flex;
+      margin: 15px 0;
+      justify-content: space-around;
+      color: white;
+    }
+    .total {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      position: relative;
+    }
+    .selected {
+      background-color: green;
+    }
+    .total::before {
+      content: "";
+      position: absolute;
+      width: 560px;
+      height: 2px;
+      bottom: 30px;
+      background-color: white;
+    }
+    h3 {
+      margin-left: 400px;
+    }
+  </style>
+  <body>
+    <div id="app">
+      <div class="container">
+        <h1>Service</h1>
+        <div class="display">
+          <div
+            class="menu"
+            v-for="cate in menus"
+            :key="cate.food"
+            @click="toggleSelected(cate)"
+            :class=" {'selected': selectedItems[cate.food]} "
+          >
+            <h2>{{cate.food}}</h2>
+            <h4>${{cate.price}}</h4>
+          </div>
+          <div class="total">
+            <h2>TOTAL</h2>
+            <h3>${{total}}</h3>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const { createApp } = Vue;
+      const app = createApp({
+        data() {
+          return {
+            menus: [
+              {
+                food: "burger",
+                price: 300,
+              },
+              {
+                food: "sandwich",
+                price: 500,
+              },
+              {
+                food: "cheese",
+                price: 200,
+              },
+              {
+                food: "money",
+                price: 100,
+              },
+            ],
+            selectedItems: {},
+          };
+        },
+        methods: {
+          toggleSelected(cate) {
+            if (this.selectedItems[cate.food]) {
+              delete this.selectedItems[cate.food];
+            } else {
+              this.selectedItems[cate.food] = cate.price;
+            }
+          },
+        },
+        computed: {
+          total() {
+            return Object.values(this.selectedItems).reduce(
+              (acc, cur) => acc + cur,
+              0
+            );
+          },
+        },
+      }).mount("#app");
+    </script>
+  </body>
+</html>
