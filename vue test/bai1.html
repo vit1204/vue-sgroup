@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title></title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="./style.css" rel="stylesheet" />
+    <script src="https://unpkg.com/vue@3.0.0-beta.12/dist/vue.global.js"></script>
+    <link rel="stylesheet" href="./bai1.css" />
+  </head>
+  <style>
+    #app {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+    .style1 {
+      background-color: green;
+      opacity: 0.4;
+    }
+    button {
+      width: 50px;
+      height: 30px;
+      background-color: red;
+      overflow: hidden;
+      color: white;
+      font-size: 1, 2rem;
+    }
+
+    button:active {
+      background-color: green;
+    }
+    h2 {
+      font-size: 1, 2rem;
+      color: black;
+    }
+  </style>
+  <body>
+    <div id="app">
+      <div class="button-view">
+        <button
+          type="button"
+          v-for="array in arr"
+          :key="array[0]"
+          @click="selectItem = array"
+          :class=" {'style1': selectItem === array}"
+        >
+          {{array}}
+        </button>
+      </div>
+      <div>
+        you are choosing
+        <h2 :class=" button ">{{selectItem}}</h2>
+      </div>
+    </div>
+
+    <script>
+      const { createApp } = Vue;
+      const app = createApp({
+        data() {
+          return {
+            arr: ["Home", "Contact", "Service", "About"],
+            selectItem: "",
+          };
+        },
+      }).mount("#app");
+    </script>
+  </body>
+</html>
