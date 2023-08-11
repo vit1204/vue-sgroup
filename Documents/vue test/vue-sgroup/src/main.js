@@ -1,23 +1,23 @@
 import "./assets/main.css";
 
-import { createApp,  } from "vue";
+import { createApp } from "vue";
 import App from "@/App.vue";
-import RegisterForm from "@/components/RegisterForm.vue";
-import Form from "@/components/Form.vue";
-import { createRouter , createWebHashHistory } from 'vue-router'
+import RegisterForm from "../views/RegisterForm.vue";
+import Form from "../views/Form.vue";
+import { createRouter, createWebHashHistory } from "vue-router";
+import Notifications from "@kyvg/vue3-notification";
+import DashBoard from "./components/DashBoard.vue";
 
 const routes = [
-  { path: '/', component: Form },
-  { path: '/register', component: RegisterForm },
-  {path: '/:catchAll(.*)',
-        component: Error}
-]
+  { path: "/", component: Form },
+  { path: "/register", component: RegisterForm },
+  { path: "/DashBoard", component: DashBoard },
+  { path: "/:catchAll(.*)", component: Error },
+];
 
 const router = createRouter({
   history: createWebHashHistory(),
   routes,
-})
+});
 
-
-
-createApp(App).use(router).mount("#app");
+createApp(App).use(router).use(Notifications).mount("#app");

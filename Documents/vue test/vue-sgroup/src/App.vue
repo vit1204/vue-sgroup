@@ -1,18 +1,11 @@
 <script setup>
-import { computed, ref, watch } from "vue";
-import Form from "@/components/Form.vue";
-import RegisterForm from "@/components/RegisterForm.vue";
-
 </script>
 
 
 
 <template>
-
-
-   <router-view />
-
-
+  <router-view />
+  <notifications />
 </template>
 
 <style scoped>

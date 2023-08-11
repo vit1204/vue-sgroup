@@ -3,7 +3,9 @@ import { useNotification } from "@kyvg/vue3-notification";
 const { notify } = useNotification()
 import { ref, computed } from "vue";
 import axios from "axios";
+import { useRouter } from "vue-router";
 
+const router = useRouter()
 const username = ref('')
 const password = ref('')
 
@@ -12,11 +14,16 @@ const isLogin = computed(() => !!accessToken.value)
 
 const login = () => {
   console.log("hello Viet")
-  axios.post('http://localhost:3000/auth/login', {
+  axios.post('http://localhost:3001/auth/login', {
     username: username.value,
     password: password.value
   })
     .then((res) => {
+      router.push("/DashBoard")
+      notify({
+        title: "Authorization",
+        text: "You have been logged in!",
+      })
       if (res.data.token) {
         localStorage.setItem('accessToken', JSON.stringify(res.data.token))
       }
@@ -30,21 +37,10 @@ const Logout = () => {
   console.log("You have been Logout")
 }
 
-const showNoti = () => {
-  console.log(showNoti);
-  if (login) {
-    notify({
-      title: "Authorization",
-      text: "You have been logged in!",
-
-    })
-  }
-
-}
 </script>
 
 <template>
-  <div class="login-form">
+  <div class="login-form ">
     <form @submit.prevent="login">
       <div class="form-group">
         <label for="username">Username</label>
@@ -58,11 +54,8 @@ const showNoti = () => {
       <h1> Not registed tet ? <router-link to="/register">Register</router-link> </h1>
       <button @click.prevent="Logout" type="submit">Logout</button>
     </form>
-  
+
   </div>
-
-
-
 </template>
 
 <style scoped>

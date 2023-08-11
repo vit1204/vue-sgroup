@@ -1,6 +1,9 @@
 <script setup>
 import axios from 'axios'
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+
+const router = useRouter()
 
 const username = ref('')
 const password = ref('')
@@ -12,7 +15,7 @@ const confirmPassword = ref('')
 
 const register = () => {
   console.log('hehe')
-  axios.post('http://localhost:3000/auth/register', {
+  axios.post('http://localhost:3001/auth/register', {
     name: name.value,
     age: parseInt(age.value),
     username: username.value,
@@ -21,6 +24,7 @@ const register = () => {
     email: email.value,
     confirmPassword: confirmPassword.value
   }).then((response) => {
+    router.push('/')
     console.log(response.data)
   }).catch((Error) => {
     console.log(Error)
@@ -31,7 +35,6 @@ const register = () => {
 
 
 <template>
-  
   <div class="login-form">
     <form @submit.prevent="register">
 
