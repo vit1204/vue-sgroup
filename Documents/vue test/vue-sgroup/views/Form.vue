@@ -32,9 +32,12 @@ const login = () => {
     })
 }
 const Logout = () => {
-  localStorage.removeItem('accessToken')
-  accessToken.value = null
-  console.log("You have been Logout")
+  if (isLogin) {
+    localStorage.removeItem('accessToken')
+    accessToken.value = null
+    console.log("You have been Logout")
+
+  }
 }
 
 </script>
