@@ -3,8 +3,12 @@ import axios from 'axios'
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 
-const router = useRouter()
 
+
+
+const router = useRouter()
+const URL_BE = ref('')
+URL_BE.value = import.meta.env.VITE_AWS_API
 const username = ref('')
 const password = ref('')
 const name = ref('')
@@ -15,7 +19,7 @@ const confirmPassword = ref('')
 
 const register = () => {
   console.log('hehe')
-  axios.post('http://localhost:3000/auth/register', {
+  axios.post(`http://${URL_BE.value}:3000/auth/register`, {
     name: name.value,
     age: parseInt(age.value),
     username: username.value,

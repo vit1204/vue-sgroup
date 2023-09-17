@@ -44,7 +44,6 @@ const props = defineProps({
 const actionChoose = ref(false);
 
 function openPopup() {
-
   actionChoose.value = !actionChoose.value;
 }
 

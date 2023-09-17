@@ -1,13 +1,12 @@
-import './assets/main.css'
-import './assets/index.css'
+import "./assets/main.css";
+import "./assets/index.css";
 
-import { createApp } from 'vue'
-import { createPinia } from 'pinia'
-import App from './App.vue'
-import Notifications from '@kyvg/vue3-notification'
-import router from '../router/index'
+import { createApp } from "vue";
+import { createPinia } from "pinia";
+import App from "./App.vue";
+import Notifications from "@kyvg/vue3-notification";
+import router from "../router/index";
+import ElementPlus from 'element-plus'
 
-const pinia = createPinia()
 
-
-createApp(App).use(router).use(pinia).use(Notifications).mount('#app')
+createApp(App).use(router).use(ElementPlus).use(Notifications).mount("#app");

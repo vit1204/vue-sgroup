@@ -1,23 +1,44 @@
 <script setup>
 import { useNotification } from "@kyvg/vue3-notification";
 const { notify } = useNotification()
-import { ref, computed, watch, unref } from "vue";
+import { ref, computed } from "vue";
 import axios from "axios";
 import { useRouter } from "vue-router";
-import useAuthStore from "../store/auth"
 
 
+
+const URL_BE = ref('')
+URL_BE.value = import.meta.env.VITE_AWS_API
+
+const router = useRouter()
 const username = ref('')
 const password = ref('')
-const authStore = useAuthStore()
+
 
 const accessToken = localStorage.getItem('accessToken')
 const isLogin = computed(() => Boolean(accessToken.value))
 
 
-const loginStore = authStore()
+
 const login = () => {
-  loginStore.login(unref(username), unref(password))
+  axios.post(`http://${URL_BE.value}:3000/auth/login/`, {
+    username: username.value,
+    password: password.value
+  })
+    .then((res) => {
+      router.push("/DashBoard")
+      notify({
+        title: "Authorization",
+        text: "You have been logged in!",
+      })
+      if (res.data.token) {
+        localStorage.setItem('accessToken', JSON.stringify(res.data.token))
+      }
+      console.log("login succes")
+      return res.data
+    }).catch((e) => {
+      console.log(e)
+    })
 }
 
 
@@ -37,7 +58,7 @@ const logOut = () => {
     <form @submit.prevent="login">
       <div class="form-group">
 
-        <label for="username" >Username</label>
+        <label for="username">Username</label>
         <input v-model="username" type="text" id="username" name="username" />
       </div>
       <div class="form-group">

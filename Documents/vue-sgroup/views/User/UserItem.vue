@@ -1,62 +1,72 @@
 
 
 <template>
-  <div class="search-bar flex justify-around mx-30 my-4">
-    <input @input="event => search = event.target.value" type="text" name="" id="" placeholder="Search User"
-      class="px-1 py-1 border-slate-700 border-solid border-2" />
-    <button class="px-3 py-2 bg-sky-600 text-white">+ Create New</button>
-  </div>
-  <table class="table-auto w-full px-20 mt-5">
-    <thead class="text-xs text-gray-700 uppercase py-4 bg-white">
-      <tr scope="col" class="px-8 py-3 bg-white">
-        <th v-for="column in tableColumns " class="px-5 text-black">
-          {{ column }}
-        </th>
+  <div class=" m-auto ">
+    <div class="search-bar flex justify-around mx-30 my-4">
+      <input @input="event => search = event.target.value" type="text" name="" id="" placeholder="Search User"
+        class="px-1 py-1 border-slate-700 border-solid border-2" />
+      <button class="px-3 py-2 bg-sky-600 text-white">+ Create New</button>
+    </div>
+    <table class="table-auto w-full px-20 mt-5">
+      <thead class="text-xs text-gray-700 uppercase py-4 bg-white">
+        <tr scope="col" class="px-8 py-3 bg-white">
+          <th v-for="column in tableColumns " class="px-5 text-black">
+            {{ column }}
+          </th>
 
-      </tr>
-    </thead>
+        </tr>
+      </thead>
 
-    <tbody>
-      <tr v-for="user in filterUser" :key="user">
-        <td class="py-4 ">
-          <div class="flex items-center">
-            <img class="w-10 h-10 rounded-full " :src="avatar" alt="avatar" />
-            <div class="mx-3">
-              <p>{{ user.name }}</p>
-              <b>{{ user.email }}</b>
+      <tbody>
+        <tr v-for="user in UserList" :key="user">
+          <td class="py-4 ">
+            <div class="flex items-center">
+              <img class="w-10 h-10 rounded-full " :src="avatar" alt="avatar" />
+              <div class="mx-3">
+                <p>{{ user.name }}</p>
+                <b>{{ user.email }}</b>
+              </div>
             </div>
-          </div>
-        </td>
-        <td class="px-3">{{ user.age }}</td>
+          </td>
+          <td class="px-3">{{ user.age }}</td>
 
 
-        <td class="px-4">{{ user.gender }}</td>
-        <td class="px-5">{{ user.CreatedAt }}</td>
-        <td class="relative">
-          <buttonAction :user="user" @deleteUser="onDeleteUser" @showForm="formId = user.id" />
+          <td class="px-4">{{ user.gender }}</td>
+          <td class="px-5">{{ user.CreatedAt }}</td>
+          <td class="relative">
+            <buttonAction :key="user.id" :user="user" @deleteUser="onDeleteUser" @showForm="formId = user.id" />
 
+          </td>
+          <UpdateForm :user="user" @updateUser="updateUser" @hideForm=" formId = null" v-show="user.id === formId" />
+        </tr>
+      </tbody>
 
-        </td>
-        <UpdateForm :user="user"   @hideForm=" formId = null" v-show="user.id === formId" />
-      </tr>
-    </tbody>
-  </table>
+    </table>
+    <el-pagination class=" my-5 flex items-center justify-between" :page-size="5" layout="prev, pager, next"
+      :total="totalRecords" @current-change="handlePageChange" />
+  </div>
 </template>
 
 <script setup>
+
 import UpdateForm from '../../src/components/user/UpdateForm.vue';
-import buttonAction from '../../src/components/icons/buttonAction.vue';
-import { computed, onBeforeMount, onMounted, ref } from 'vue';
+import buttonAction from '../../src/components/buttonAction.vue';
+import { computed, onBeforeMount, onMounted, ref, unref } from 'vue';
 import axios from 'axios';
+
+
+
+const URL_BE = ref('');
+URL_BE.value = import.meta.env.VITE_AWS_API
 
 let formId = ref(null)
 const search = ref('')
+const totalRecords = ref(0)
 
 const UserList = ref([])
+const pageNum = ref(1)
 
-const name = ref('')
-const age = ref('')
-const email = ref('')
+
 
 
 let avatar = "https://i.pravatar.cc/300"
@@ -68,17 +78,40 @@ const tableColumns = [
   "actions"
 ]
 
+const handlePageChange = (newPage) => {
+  pageNum.value = newPage
+  getUser(pageNum.value)
+
+}
 
 
-const getUser = () => {
-  axios.get('http://localhost:3000/user/getUser').then((res) => {
-    UserList.value = res.data.data
-    console.log(UserList.value)
+const getUser = async (pageNumber = 1) => {
+  try {
+    axios.get(`http://${URL_BE.value}:3000/user/pagination?page=${pageNumber}&limit=5/`).then((res) => {
+      UserList.value = res.data.Pagination
+      console.log(UserList.value)
+    })
+  }
+  catch (error) {
+    console.log(error)
+  }
+
+}
+const totalRecord = () => {
+  axios.get(`http://${URL_BE.value}:3000/user/getUser/`).then((res) => {
+    totalRecords.value = res.data.data.length
+    console.log(res.data.data.length)
+  }).catch((error) => {
+    console.log(error)
   })
 }
+
 onBeforeMount(async () => {
-  await getUser()
+  await getUser(pageNum.value)
+  totalRecord()
 })
+
+
 
 
 
@@ -86,9 +119,9 @@ onBeforeMount(async () => {
 const onDeleteUser = async (id) => {
 
   try {
-    await axios.delete(`http://localhost:3000/user/${id}`
+    const userUpdate = UserList.value.find((user) => user.id === id)
+    await axios.delete(`http://${URL_BE.value}:3000/user/${id}/`,userUpdate
     )
-
     window.location.reload()
 
   }
@@ -101,25 +134,11 @@ const onDeleteUser = async (id) => {
 const updateUser = async (id) => {
 
   try {
-    const { data: respData } = await axios({
-      method: "put",
-      url: `http://localhost:3000/user/${id}`,
-      data: {
-        name: name.value,
-        age: parseInt(age.value),
-        email: email.value
-      }
-    })
-    console.log('respData', respData)
-    // const res = await axios.put(`http://localhost:3000/user/${id}`, {
 
-    //   name: name.value,
-    //   age: parseInt(age.value),
-    //   email: email.value
-    // })
-    // getUser()
-    // console.log(res.data)
-    // window.location.reload()
+    const userUpdate = UserList.value.find((user) => user.id === id)
+    const res = await axios.put(`http://${URL_BE.value}:3000/user/${id}/`, userUpdate)
+    console.log(res.data)
+    window.location.reload()
   }
   catch (error) {
     console.log(error)
